@@ -1,0 +1,27 @@
+# nginx on aks-dev-training, taken over from Flux (mmirceta/fluxcd). The
+# root Application (Terraform, landing-zone/k8s/dev/08-argocd) syncs this
+# folder; this Application then renders the Kustomize overlay
+# apps/nginx/dev.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx
+  namespace: argocd
+  # Deleting this Application also deletes the nginx objects (cascade).
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/mmirceta/argocd
+    targetRevision: main
+    path: apps/nginx/dev
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: nginx
+  syncPolicy:
+    # Same behaviour as Flux: objects removed from git are deleted, manual
+    # changes in the cluster are reverted.
+    automated:
+      prune: true
+      selfHeal: true

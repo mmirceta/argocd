@@ -8,18 +8,27 @@ Flux ([mmirceta/fluxcd](https://github.com/mmirceta/fluxcd)). Infrastructure
 Argo CD and Flux must never manage the same objects. On dev, Argo CD owns
 **nginx**; Flux owns apache and Headlamp.
 
-## Layout (app of apps)
+## Layout (app of apps per environment)
 
 ```
-<env>/<app>.yaml        Argo CD Application per app; the root Application syncs <env>/
-apps/<app>/base/        Environment-independent manifests
-apps/<app>/<env>/       Kustomize overlay: base + env specifics (hostnames, ...)
+<env>/<app>.yaml        Argo CD Application for one app (read by the root app)
+<env>/<app>/            That app's manifests (read only by its Application)
 ```
 
-Terraform creates one root Application per cluster that syncs `<env>/`
-recursively as plain YAML, so `<env>/` holds only Application manifests;
-Kustomize folders live under `apps/`. Add an app by creating its base and
-overlay under `apps/` and an Application in `<env>/` pointing at the overlay.
+| Folder | Status |
+|---|---|
+| `dev/` | aks-dev-training: `nginx` |
+| `prod/` | Placeholder, no Argo CD on prod yet |
+
+Every environment is self-contained: no shared base, an app is copied into
+`prod/` when prod gets it. Terraform creates one root Application per
+cluster that syncs the **top-level files** of `<env>/` (not recursive), so
+the manifest folders next to them are never applied by the root app.
+
+Add an app: create `<env>/<app>/` (plain YAML or a `kustomization.yaml`)
+and `<env>/<app>.yaml` (copy `dev/nginx.yaml`, change name, path and
+namespace). Remove an app: delete `<env>/<app>.yaml`; the root app prunes
+the Application and its finalizer deletes the app's objects.
 
 Compare with Flux: there, one Kustomization applies `<env>/` and apps are
 listed in `<env>/kustomization.yaml`; here every app is its own Application

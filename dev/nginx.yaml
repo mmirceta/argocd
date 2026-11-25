@@ -1,7 +1,7 @@
 # nginx on aks-dev-training, taken over from Flux (mmirceta/fluxcd). The
 # root Application (Terraform, landing-zone/k8s/dev/08-argocd) syncs this
-# folder; this Application then renders the Kustomize overlay
-# apps/nginx/dev.
+# folder's top-level files; this Application then renders the Kustomize
+# folder dev/nginx/.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -15,7 +15,7 @@ spec:
   source:
     repoURL: https://github.com/mmirceta/argocd
     targetRevision: main
-    path: apps/nginx/dev
+    path: dev/nginx
   destination:
     server: https://kubernetes.default.svc
     namespace: nginx

@@ -25,7 +25,7 @@ Every environment is self-contained: no shared base, an app is copied into
 cluster that syncs the **top-level files** of `<env>/` (not recursive), so
 the manifest folders next to them are never applied by the root app.
 
-Add an app: create `<env>/<app>/` (plain YAML or a `kustomization.yaml`)
+Add an app: create `<env>/<app>/` (plain YAML; every file in it is applied)
 and `<env>/<app>.yaml` (copy `dev/nginx.yaml`, change name, path and
 namespace). Remove an app: delete `<env>/<app>.yaml`; the root app prunes
 the Application and its finalizer deletes the app's objects.

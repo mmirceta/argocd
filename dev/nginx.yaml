@@ -1,7 +1,8 @@
 # nginx on aks-dev-training, taken over from Flux (mmirceta/fluxcd). The
 # root Application (Terraform, landing-zone/k8s/dev/08-argocd) syncs this
-# folder's top-level files; this Application then renders the Kustomize
-# folder dev/nginx/.
+# folder's top-level files; this Application then applies every YAML file
+# in dev/nginx/ (plain directory, no Kustomize). The files carry no
+# namespace: Argo CD puts them into destination.namespace.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:

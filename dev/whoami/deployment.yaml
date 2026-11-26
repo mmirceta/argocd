@@ -1,0 +1,33 @@
+# whoami: tiny HTTP server that echoes the request (headers, client IP,
+# pod hostname). Handy for seeing what the Gateway forwards.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whoami
+  labels:
+    app: whoami
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: whoami
+  template:
+    metadata:
+      labels:
+        app: whoami
+    spec:
+      nodeSelector:
+        kubernetes.azure.com/agentpool: applications
+      containers:
+        - name: whoami
+          image: traefik/whoami:v1.12.0
+          ports:
+            - containerPort: 80
+          resources:
+            # Small on purpose: the applications node is nearly full.
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              cpu: 50m
+              memory: 32Mi

@@ -17,7 +17,7 @@ Argo CD and Flux must never manage the same objects. On dev, Argo CD owns
 
 | Folder | Status |
 |---|---|
-| `dev/` | aks-dev-training: `nginx` |
+| `dev/` | aks-dev-training: `nginx` (app of apps), `whoami` (standalone) |
 | `prod/` | Placeholder, no Argo CD on prod yet |
 
 Every environment is self-contained: no shared base, an app is copied into
@@ -29,6 +29,15 @@ Add an app: create `<env>/<app>/` (plain YAML; every file in it is applied)
 and `<env>/<app>.yaml` (copy `dev/nginx.yaml`, change name, path and
 namespace). Remove an app: delete `<env>/<app>.yaml`; the root app prunes
 the Application and its finalizer deletes the app's objects.
+
+**Standalone example: whoami.** `dev/whoami/` has manifests but there is
+**no** `dev/whoami.yaml`, so the root app doesn't know about it. Its
+Application was created by hand in the UI (repo this one, path
+`dev/whoami`, namespace `whoami`). Difference from nginx: the Application
+itself lives only in the cluster, not in git. Nobody recreates it if it is
+deleted or Argo CD is reinstalled, and changing its settings (sync policy,
+path) is a UI click, not a PR. Delete it in the UI with "Foreground" or
+"Background" cascade to also remove its objects.
 
 Compare with Flux: there, one Kustomization applies `<env>/` and apps are
 listed in `<env>/kustomization.yaml`; here every app is its own Application

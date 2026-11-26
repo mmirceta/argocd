@@ -1,0 +1,17 @@
+# Attached to the shared Gateway (NGINX Gateway Fabric). external-dns
+# publishes whoami.mapko.dev from the hostname; the *.mapko.dev wildcard
+# certificate covers HTTPS.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: whoami
+spec:
+  hostnames:
+    - whoami.mapko.dev
+  parentRefs:
+    - name: gateway
+      namespace: nginx-gateway
+  rules:
+    - backendRefs:
+        - name: whoami
+          port: 80
